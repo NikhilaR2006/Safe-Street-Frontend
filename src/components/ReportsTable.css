@@ -1,0 +1,278 @@
+/* Add this rule to hide overflow when report detail is shown */
+body.modal-open .table-container {
+  overflow: hidden !important;
+}
+
+.table-container {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin: 24px auto;
+  max-width: 1200px;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: auto;
+}
+
+.reports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.reports-header h2 {
+  margin-bottom: 0;
+  color: #1e1e2f;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-button {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.filter-button:hover {
+  background-color: #e0e0e0;
+}
+
+.filter-button.active {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 800px;
+  min-height: 400px; /* Ensure table maintains height even when empty */
+}
+
+.table thead {
+  background-color: #f8f9fa;
+  color: #1e1e2f;
+}
+
+.table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e0e0e0;
+  color: #555;
+}
+
+.table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.95rem;
+  color: #4a4a4a;
+}
+
+.profile-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e8f0fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+}
+
+.status-label.resolved {
+  background-color: #e3f0fb;
+  color: #1976d2;
+}
+
+.status-label.seen {
+  background-color: #e6f4ea;
+  color: #137333;
+}
+
+.status-label.unseen {
+  background-color: #fdeaea;
+  color: #d32f2f;
+}
+
+.frequency-badge {
+  background-color: #f0f0f0;
+  color: #555;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+.view-button {
+  padding: 8px 16px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.view-button:hover {
+  background-color: #155fcf;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-row {
+  transition: background-color 0.2s ease;
+}
+
+.frequency-badge {
+  background-color: #e8eaf6;
+  color: #3f51b5;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.no-reports {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+  font-style: italic;
+}
+
+.empty-row {
+  height: 300px; /* Minimum height for empty table */
+}
+
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding: 16px;
+    margin: 16px;
+    border-radius: 12px;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .profile-circle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profile-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+  }
+}
+
+/* Pagination styles */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+  padding: 0 24px;
+}
+
+.pagination-button {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #1a73e8;
+  color: white;
+  border-color: #1a73e8;
+}
+
+.pagination-button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 15px;
+  background-color: #f8f9fa;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}

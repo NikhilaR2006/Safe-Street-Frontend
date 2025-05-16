@@ -1,0 +1,336 @@
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import ReportsTable from '../components/ReportsTable';
+import ReportDetailCard from '../components/ReportDetailCard';
+import StatusCircles from '../components/StatusCircles';
+import AreaWiseUploads from './AreaWiseReports';
+import ProfileSettings from '../components/ProfileSettings';
+import './Authority.css';
+
+const Authority = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [reports, setReports] = useState([]);
+  const [filteredReports, setFilteredReports] = useState([]);
+  const [dateFilter, setDateFilter] = useState('all');
+  const [seenFilter, setSeenFilter] = useState('all'); // 'all', 'seen', 'unseen'
+  const [resolvedFilter, setResolvedFilter] = useState(''); // '' or 'resolved'
+  const [stats, setStats] = useState({
+    seen: 0,
+    unseen: 0,
+    reviewed: 0,
+    pending: 0,
+    resolved: 0
+  });
+
+  useEffect(() => {
+    const userType = localStorage.getItem('userType');
+    console.log('[Authority useEffect] Running check. Path:', location.pathname, 'Stored userType:', userType);
+
+    if (userType !== 'authority') {
+      console.log('[Authority useEffect] Auth check FAILED. Redirecting to /login...');
+      navigate('/login');
+      return;
+    }
+    console.log('[Authority useEffect] Auth check PASSED.');
+
+    fetchReports();
+  }, [navigate, location.pathname]);
+
+  const fetchReports = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/images');
+      const data = await response.json();
+      if (data.success) {
+        console.log('API Response Images:', data.images);
+        
+        // Store original upload dates for filtering
+        const processedReports = data.images.map(img => {
+          // Use backend fields for status and progress
+          let status = img.status || 'Unseen'; // Unseen/Seen
+          let progress = img.progress || 'Unresolved'; // Unresolved/Resolved
+          const uploadedAt = new Date(img.uploadedAt);
+          return {
+            id: img._id,
+            imageName: img.imageName,
+            imageUrl: img.imageUrl,
+            predictedImageUrl: img.predictedImageUrl,
+            userEmail: img.userEmail,
+            uploadedAt: uploadedAt,
+            roadLocation: img.roadLocation,
+            status: status,
+            progress: progress,
+            seen: status === 'Seen', // For backwards compatibility
+            resolved: progress === 'Resolved' // For backwards compatibility
+          };
+        });
+        
+        setReports(processedReports);
+        setFilteredReports(processedReports);
+        
+        // Calculate stats
+        const seenCount = processedReports.filter(report => report.status === 'Seen').length;
+        const unseenCount = processedReports.length - seenCount;
+        
+        // Calculate other stats
+        const reviewedCount = processedReports.filter(report => report.status === 'Reviewed').length;
+        const resolvedCount = processedReports.filter(report => report.progress === 'Resolved').length;
+        const pendingCount = processedReports.filter(report => report.progress !== 'Resolved').length;
+
+        setStats({
+          seen: seenCount,
+          unseen: unseenCount,
+          reviewed: reviewedCount,
+          pending: pendingCount,
+          resolved: resolvedCount
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    }
+  };
+
+  const handleFilterChange = (filter) => {
+    setDateFilter(filter);
+  };
+
+  // Filter reports based on date and seen/resolved status
+  useEffect(() => {
+    if (!reports.length) return;
+    
+    console.log('Filtering reports with date filter:', dateFilter, 'and seen filter:', seenFilter);
+    
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    // First apply date filter
+    let filtered;
+    switch (dateFilter) {
+      case 'today':
+        filtered = reports.filter(report => report.uploadedAt >= todayStart);
+        break;
+      case 'week':
+        filtered = reports.filter(report => report.uploadedAt >= weekStart);
+        break;
+      case 'month':
+        filtered = reports.filter(report => report.uploadedAt >= monthStart);
+        break;
+      default:
+        filtered = [...reports]; // Use spread to create a new array reference
+    }
+    
+    // Then apply seen/unseen filter
+    if (seenFilter !== 'all') {
+      filtered = filtered.filter(report => 
+        seenFilter === 'seen' ? report.status === 'Seen' : report.status !== 'Seen'
+      );
+    }
+
+    // Apply resolved filter if set
+    if (resolvedFilter === 'resolved') {
+      filtered = filtered.filter(report => report.progress === 'Resolved');
+    }
+    
+    console.log('Filtered reports after filtering:', filtered.length);
+    setFilteredReports(filtered);
+  }, [reports, dateFilter, seenFilter, resolvedFilter]);
+
+  const handleView = (id) => {
+    // Only set the selected report without marking it as seen
+    const report = reports.find(r => r.id === id);
+    setSelectedReport(report);
+  };
+
+  const handleClose = () => {
+    setSelectedReport(null);
+  };
+
+  const markAsSeen = async (id) => {
+    // Mark report as seen (status: 'Seen') in backend and update frontend state
+    try {
+      const response = await fetch(`http://localhost:5000/api/images/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'Seen' })
+      });
+      if (!response.ok) {
+        console.error('Failed to update status to Seen in backend:', response.statusText);
+      } else {
+        const updatedReports = reports.map(report =>
+          report.id === id ? { ...report, status: 'Seen', seen: true } : report
+        );
+        setReports(updatedReports);
+        setFilteredReports(updatedReports);
+        const seenCount = updatedReports.filter(report => report.status === 'Seen').length;
+        const unseenCount = updatedReports.length - seenCount;
+        setStats(prevStats => ({
+          ...prevStats,
+          seen: seenCount,
+          unseen: unseenCount
+        }));
+      }
+    } catch (error) {
+      console.error('Error updating status to Seen:', error);
+    }
+    setSelectedReport(prev => prev && prev.id === id ? { ...prev, status: 'Seen', seen: true } : prev);
+  };
+
+  const markAsResolved = async (id) => {
+    // Mark report as resolved (progress: 'Resolved') in backend and update frontend state
+    try {
+      const response = await fetch(`http://localhost:5000/api/images/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ progress: 'Resolved' })
+      });
+      if (!response.ok) {
+        console.error('Failed to update progress to Resolved in backend:', response.statusText);
+      } else {
+        const updatedReports = reports.map(report =>
+          report.id === id ? { ...report, progress: 'Resolved', resolved: true } : report
+        );
+        setReports(updatedReports);
+        setFilteredReports(updatedReports);
+        setStats(prevStats => ({
+          ...prevStats,
+          resolved: prevStats.resolved + 1,
+          pending: prevStats.pending - 1
+        }));
+        handleClose();
+      }
+    } catch (error) {
+      console.error('Error updating progress to Resolved:', error);
+    }
+  };
+
+  const handleSeenFilterChange = (filter) => {
+    setSeenFilter(filter);
+    setResolvedFilter(''); // Reset resolved filter when changing seen filter
+  };
+
+  const handleResolvedFilterChange = (filter) => {
+    setResolvedFilter(filter);
+    setSeenFilter('all'); // Reset seen filter when using resolved filter
+  };
+
+  const renderContent = () => {
+    console.log('[Authority renderContent] Rendering for path:', location.pathname);
+    switch (location.pathname) {
+      case '/authority':
+        return (
+          <>
+            <div className="dashboard">
+              <h2>Welcome to Authority Dashboard</h2>
+              <div className="stats-overview">
+                <StatusCircles stats={{ seen: stats.seen, unseen: stats.unseen }} />
+                <StatusCircles stats={{ reviewed: stats.reviewed, pending: stats.pending, resolved: stats.resolved }} />
+              </div>
+            </div>
+            <div className="reports-section">
+              <h2>Recent Reports</h2>
+              <ReportsTable 
+                reports={filteredReports.slice(0, 5)} 
+                onView={handleView} 
+                onSeenFilterChange={handleSeenFilterChange}
+                seenFilter={seenFilter}
+              />
+            </div>
+          </>
+        );
+      case '/authority/ReportsPage':
+        return (
+          <div className="reports-section">
+            <div className="reports-header">
+              <h2>All Reports</h2>
+              <div className="filter-controls">
+                <button 
+                  className={`filter-button ${dateFilter === 'all' ? 'active' : ''}`} 
+                  onClick={() => handleFilterChange('all')}
+                >
+                  All Time
+                </button>
+                <button 
+                  className={`filter-button ${dateFilter === 'today' ? 'active' : ''}`} 
+                  onClick={() => handleFilterChange('today')}
+                >
+                  Today
+                </button>
+                <button 
+                  className={`filter-button ${dateFilter === 'week' ? 'active' : ''}`} 
+                  onClick={() => handleFilterChange('week')}
+                >
+                  This Week
+                </button>
+                <button 
+                  className={`filter-button ${dateFilter === 'month' ? 'active' : ''}`} 
+                  onClick={() => handleFilterChange('month')}
+                >
+                  This Month
+                </button>
+              </div>
+            </div>
+            <div className="total-reports">
+              {filteredReports.length} {filteredReports.length === 1 ? 'Report' : 'Reports'} Found
+            </div>
+            <ReportsTable 
+              reports={filteredReports} 
+              onView={handleView} 
+              onSeenFilterChange={handleSeenFilterChange}
+              seenFilter={seenFilter}
+              onResolvedFilterChange={handleResolvedFilterChange}
+              resolvedFilter={resolvedFilter}
+            />
+          </div>
+        );
+      case '/authority/Status':
+        return (
+          <div className="stats-overview">
+            <div className="status-row">
+              <StatusCircles stats={{ seen: stats.seen, unseen: stats.unseen }} />
+            </div>
+            <div className="status-row">
+              <StatusCircles stats={{ reviewed: stats.reviewed, pending: stats.pending, resolved: stats.resolved }} />
+            </div>
+          </div>
+        );
+      case '/authority/Settings':
+        return (
+          <div className="settings-section">
+            <h2>Settings</h2>
+            <ProfileSettings />
+          </div>
+        );
+      case '/authority/areawise-uploads':
+        return <AreaWiseUploads />;
+      default:
+        console.log(`Unknown authority path: ${location.pathname}, redirecting to /authority`);
+        navigate('/authority');
+        return null;
+    }
+  };
+
+  return (
+    <div className="authority-container">
+      <Navbar />
+      <main className="main-content">
+        {renderContent()}
+        {selectedReport && (
+          <div className="report-detail-wrapper">
+            <ReportDetailCard
+              report={selectedReport}
+              onClose={handleClose}
+              markAsSeen={() => markAsSeen(selectedReport.id)}
+              markAsResolved={() => markAsResolved(selectedReport.id)}
+            />
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default Authority;
