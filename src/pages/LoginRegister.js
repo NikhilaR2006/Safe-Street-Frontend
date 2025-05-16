@@ -88,8 +88,8 @@ const LoginRegister = () => {
 
     try {
       const endpoint = isRegistering 
-        ? 'http://localhost:5000/api/auth/register' 
-        : 'http://localhost:5000/api/auth/login';
+        ? 'https://safe-street-backend.onrender.com/api/auth/register' 
+        : 'https://safe-street-backend.onrender.com/api/auth/login';
       
       const response = await fetch(endpoint, {
         method: 'POST',

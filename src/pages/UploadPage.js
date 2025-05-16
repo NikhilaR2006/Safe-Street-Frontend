@@ -61,7 +61,7 @@ function UploadPage() {
   const handleLogout = async () => {
     try {
       // Clear address-related fields from the database
-      const response = await fetch('http://localhost:5000/api/user/details', {
+      const response = await fetch('https://safe-street-backend.onrender.com/api/user/details', {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ function UserDetailsForm({ userEmail, onDetailsUpdate }) {
       }
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:5000/api/user?email=${encodeURIComponent(userEmail)}`);
+        const response = await fetch(`https://safe-street-backend.onrender.com/api/user?email=${encodeURIComponent(userEmail)}`);
         const data = await response.json();
 
         if (response.ok && data.success && data.user) {
@@ -285,7 +285,7 @@ function UserDetailsForm({ userEmail, onDetailsUpdate }) {
       console.log('Saving details for user:', userEmail);
       console.log('Form data:', formData);
 
-      const response = await fetch('http://localhost:5000/api/user/details', {
+      const response = await fetch('https://safe-street-backend.onrender.com/api/user/details', {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -431,7 +431,7 @@ function UploadComponent({ userEmail, detailsComplete, setActiveTab }) {
     if (userEmail) {
       const checkExistingUploads = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/images/user/${encodeURIComponent(userEmail)}`);
+          const response = await fetch(`https://safe-street-backend.onrender.com/api/images/user/${encodeURIComponent(userEmail)}`);
           const data = await response.json();
           
           if (response.ok && data.success) {
@@ -628,7 +628,7 @@ function UploadComponent({ userEmail, detailsComplete, setActiveTab }) {
        };
 
        try {
-           const response = await fetch("http://localhost:5000/api/upload", { 
+           const response = await fetch("https://safe-street-backend.onrender.com/api/upload", { 
                method: "POST",
                headers: { "Content-Type": "application/json" },
                body: JSON.stringify(payload),
@@ -820,7 +820,7 @@ function PreviousUploads() {
     const fetchUploads = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/uploads?email=${userEmail}`);
+        const response = await fetch(`https://safe-street-backend.onrender.com/api/uploads?email=${userEmail}`);
         const data = await response.json();
         
         if (data.success) {
@@ -1076,7 +1076,7 @@ function ProfileDisplay({ userEmail }) {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/user?email=${encodeURIComponent(userEmail)}`);
+        const response = await fetch(`https://safe-street-backend.onrender.com/api/user?email=${encodeURIComponent(userEmail)}`);
         const data = await response.json();
 
         if (data.success && data.user) {

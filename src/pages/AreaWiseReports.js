@@ -32,7 +32,7 @@ const AreaWiseUploads = () => {
     const fetchReports = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/images');
+        const response = await fetch('https://safe-street-backend.onrender.com/api/images');
         const data = await response.json();
         
         if (data.success) {
