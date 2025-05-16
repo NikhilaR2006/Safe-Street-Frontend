@@ -16,7 +16,7 @@ const ProfileSettings = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:5000/api/user?email=${encodeURIComponent(email)}`);
+        const response = await fetch(`https://safe-street-backend.onrender.com/api/user?email=${encodeURIComponent(email)}`);
         const data = await response.json();
 
         if (data.success && data.user) {

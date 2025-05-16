@@ -37,7 +37,7 @@ const NotificationBell = ({ userEmail, onNavigateToHistory }) => {
       const lastChecked = localStorage.getItem('lastNotificationCheck') || '2000-01-01T00:00:00.000Z';
       
       // Fetch user's uploads
-      const response = await fetch(`http://localhost:5000/api/uploads?email=${userEmail}`);
+      const response = await fetch(`https://safe-street-backend.onrender.com/api/uploads?email=${userEmail}`);
       const data = await response.json();
       
       if (data.success) {

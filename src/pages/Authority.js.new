@@ -41,7 +41,7 @@ const Authority = () => {
 
   const fetchReports = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/images');
+      const response = await fetch('https://safe-street-backend.onrender.com/api/images');
       const data = await response.json();
       if (data.success) {
         console.log('API Response Images:', data.images);
@@ -152,7 +152,7 @@ const Authority = () => {
   const markAsSeen = async (id) => {
     // Mark report as seen (status: 'Seen') in backend and update frontend state
     try {
-      const response = await fetch(`http://localhost:5000/api/images/${id}`, {
+      const response = await fetch(`https://safe-street-backend.onrender.com/api/images/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'Seen' })
@@ -182,7 +182,7 @@ const Authority = () => {
   const markAsResolved = async (id) => {
     // Mark report as resolved (progress: 'Resolved') in backend and update frontend state
     try {
-      const response = await fetch(`http://localhost:5000/api/images/${id}`, {
+      const response = await fetch(`https://safe-street-backend.onrender.com/api/images/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ progress: 'Resolved' })
