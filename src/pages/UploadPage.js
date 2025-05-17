@@ -535,7 +535,7 @@ function UploadComponent({ userEmail, detailsComplete, setActiveTab }) {
     formData.append("image", image);
 
     try {
-      const pythonServiceUrl = "http://localhost:5001/predict"; // Road classification service
+      const pythonServiceUrl = "https://safe-street-backend-app-py.onrender.com/predict"; // Road classification service
       const response = await fetch(pythonServiceUrl, { 
         method: "POST",
         body: formData,
