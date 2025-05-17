@@ -76,7 +76,7 @@ const ReportDetailCard = ({ report, onClose, markAsSeen, markAsResolved }) => {
       const formData = new FormData();
       formData.append('image', blob, 'upload.jpg');
 
-      const predictResponse = await fetch('https://huggingface.co/spaces/NikhilaR2006/safe-street-predict.py/predict', {
+      const predictResponse = await fetch('https://huggingface.co/spaces/NikhilaR2006/safe-street-predict.py.hf.space/predict', {
         method: 'POST',
         body: formData,
       });
