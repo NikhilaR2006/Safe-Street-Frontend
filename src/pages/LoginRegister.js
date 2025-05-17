@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Eye, EyeOff, Loader2, ArrowRight, AlertCircle, User, Mail, Lock, Shield } from 'lucide-react';
 import './LoginRegister.css';
+import { useNavigate } from 'react-router-dom';
 
 const LoginRegister = () => {
+  const navigate = useNavigate();
   const [isRegistering, setIsRegistering] = useState(false);
   const [userType, setUserType] = useState('user');
   const [formData, setFormData] = useState({
@@ -157,14 +159,12 @@ const LoginRegister = () => {
         if (data.phoneNumber) localStorage.setItem('phoneNumber', data.phoneNumber);
 
         console.log('Stored user type:', data.userType);
-        
-        // Navigate based on user type
+      
+        // In your login success block:
         if (data.userType === 'authority') {
-          console.log('Navigating to authority page');
-          window.location.href = '/authority';
+          navigate('/authority');
         } else {
-          console.log('Navigating to upload page');
-          window.location.href = '/upload';
+          navigate('/upload');
         }
       }
     } catch (err) {
