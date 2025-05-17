@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Upload, History, User, LogOut, FileText } from 'lucide-react';
 import './UploadPage.css';
 import NotificationBell from '../components/NotificationBell';
+import { useNavigate } from 'react-router-dom';
 
 // List of all districts in Telangana
 const TELANGANA_DISTRICTS = [
@@ -39,6 +40,8 @@ const TELANGANA_DISTRICTS = [
   'Warangal Urban',
   'Yadadri Bhuvanagiri'
 ];
+
+const navigate = useNavigate();
 
 function UploadPage() {
   const userEmail = localStorage.getItem("email");
@@ -84,7 +87,7 @@ function UploadPage() {
     } finally {
       // Clear local storage and redirect
       localStorage.clear();
-      window.location.href = "/login";
+      navigate('/login');
     }
   };
 
