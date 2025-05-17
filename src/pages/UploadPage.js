@@ -41,12 +41,12 @@ const TELANGANA_DISTRICTS = [
   'Yadadri Bhuvanagiri'
 ];
 
-const navigate = useNavigate();
 
 function UploadPage() {
   const userEmail = localStorage.getItem("email");
   const userType = localStorage.getItem("userType");
-  
+  const navigate = useNavigate();
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!userEmail || !userType) {
